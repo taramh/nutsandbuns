@@ -51,25 +51,25 @@
     </video>
 
     <script>
-        const siteName = 'qr-safety-pageviews';
+        // Using CounterAPI.dev instead - more reliable
+        const apiUrl = 'https://api.counterapi.dev/v1/qrcodesafety-pageviews/visits';
         
         // Automatically count page view when page loads
         function countPageView() {
-            fetch(`https://api.countapi.xyz/hit/${siteName}/views`)
-                .then(response => {
-                    if (!response.ok) throw new Error('API unavailable');
-                    return response.json();
-                })
+            fetch(apiUrl, {
+                method: 'POST'
+            })
+                .then(response => response.json())
                 .then(data => {
                     // Update both counter displays
                     document.querySelectorAll('#counter').forEach(el => {
-                        el.textContent = data.value;
+                        el.textContent = data.count;
                     });
-                    console.log('Page view counted:', data.value);
+                    console.log('Page view counted:', data.count);
                 })
                 .catch(error => {
                     console.error('Error counting page view:', error);
-                    // Fallback: show a message that counting is temporarily unavailable
+                    // Fallback: show a simple message
                     document.querySelectorAll('#counter').forEach(el => {
                         el.textContent = 'N/A';
                         el.title = 'Counter temporarily unavailable';
