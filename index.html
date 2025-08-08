@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>STOP SCANNING RANDOM QRs. There is bad shit online.</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .counter-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007cba;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        iframe {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>STOP SCANNING RANDOM QRs. There is bad shit online.</h1>
+    <h2>Luckily this is good shit, but it could have been bad.</h2>
+    
+    <!-- Counter Section Above Video -->
+    <div class="counter-section">
+        <button onclick="incrementVisit()" id="counterBtn">
+            Click to Count Your Visit. I caught you, that's fair.
+        </button>
+        <p>Total visitors who clicked: <span id="counter">Loading...</span></p>
+    </div>
+    
+    <!-- Video Section -->
+    <iframe width="560" height="315" src="https://www.youtube.com/watch?v=PsLVTMCQRa0" frameborder="0" allowfullscreen></iframe>
+
+    <script>
+        // Replace 'my-qr-video-site' with your unique site name
+        const siteName = 'qr-code-for-internet-safety';
+        
+        // Load current count on page load
+        fetch(`https://api.countapi.xyz/get/${siteName}/visits`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('counter').textContent = data.value || 0;
+            })
+            .catch(error => {
+                console.error('Error loading counter:', error);
+                document.getElementById('counter').textContent = 'Error';
+            });
+
+        function incrementVisit() {
+            const button = document.getElementById('counterBtn');
+            button.disabled = true;
+            button.textContent = 'Counting...';
+            
+            fetch(`https://api.countapi.xyz/hit/${siteName}/visits`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('counter').textContent = data.value;
+                    button.textContent = 'Thanks for visiting!';
+                    setTimeout(() => {
+                        button.textContent = 'Already counted!';
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('Error incrementing counter:', error);
+                    button.disabled = false;
+                    button.textContent = 'Click to Count Your Visit';
+                });
+        }
+    </script>
+</body>
+</html>
