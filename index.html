@@ -4,7 +4,7 @@
     <title>STOP SCANNING RANDOM QRs. There is bad shit online.</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Comic Sans MS", "Comic Sans", cursive, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
@@ -16,22 +16,6 @@
             background-color: #f5f5f5;
             border-radius: 8px;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007cba;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #005a87;
-        }
-        iframe {
-            max-width: 100%;
-            height: auto;
-        }
     </style>
 </head>
 <body>
@@ -41,7 +25,7 @@
     <!-- Counter Section Above Video -->
     <div class="counter-section">
         <p>Total page views: <span id="counter">Loading...</span></p>
-        <p style="font-size: 12px; color: #666; margin-top: 5px;">This page has been viewed by <span id="counter">0</span> QR-scanning optimists.</p>
+        <p style="font-size: 12px; color: #666; margin-top: 5px;">This page has been viewed by <span id="counter2">Loading...</span> QR-scanning optimists.</p>
     </div>
     
     <!-- Video Section -->
@@ -51,34 +35,53 @@
     </video>
 
     <script>
-        // Using CounterAPI.dev instead - more reliable
-        const apiUrl = 'https://api.counterapi.dev/v2/Page-views/home/up';
+        // Using free CountAPI.xyz (no API key needed)
+        const counterUrl = 'https://api.countapi.xyz/hit/nutsandbuns-qr-safety/page-views';
         
         // Automatically count page view when page loads
         function countPageView() {
-            fetch(apiUrl, {
-                method: 'POST'
-            })
-                .then(response => response.json())
+            console.log('Attempting to count page view...');
+            
+            fetch(counterUrl)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('API response:', data);
+                    const count = data.value || 'Unknown';
+                    
                     // Update both counter displays
-                    document.querySelectorAll('#counter').forEach(el => {
-                        el.textContent = data.count;
-                    });
-                    console.log('Page view counted:', data.count);
+                    document.getElementById('counter').textContent = count;
+                    document.getElementById('counter2').textContent = count;
+                    
+                    console.log('Page view counted:', count);
                 })
                 .catch(error => {
                     console.error('Error counting page view:', error);
-                    // Fallback: show a simple message
-                    document.querySelectorAll('#counter').forEach(el => {
-                        el.textContent = 'N/A';
-                        el.title = 'Counter temporarily unavailable';
-                    });
+                    
+                    // Fallback to localStorage solution
+                    console.log('Falling back to local storage counter...');
+                    
+                    let visitCount = parseInt(localStorage.getItem('local-page-views') || '0') + 1;
+                    localStorage.setItem('local-page-views', visitCount.toString());
+                    
+                    document.getElementById('counter').textContent = visitCount + '*';
+                    document.getElementById('counter2').textContent = visitCount + '*';
+                    document.getElementById('counter').title = 'Local count (API unavailable)';
+                    document.getElementById('counter2').title = 'Local count (API unavailable)';
                 });
         }
         
-        // Count page view automatically when page loads
-        countPageView();
+        // Wait for page to fully load before counting
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', countPageView);
+        } else {
+            countPageView();
+        }
     </script>
 </body>
 </html>
