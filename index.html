@@ -40,10 +40,8 @@
     
     <!-- Counter Section Above Video -->
     <div class="counter-section">
-        <button onclick="incrementVisit()" id="counterBtn">
-            Click to Count Your Visit. I caught you, that's fair.
-        </button>
-        <p>Total visitors who clicked: <span id="counter">Loading...</span></p>
+        <p>Total page views: <span id="counter">Loading...</span></p>
+        <p style="font-size: 12px; color: #666; margin-top: 5px;">This page has been viewed by <span id="counter">0</span> QR-scanning optimists.</p>
     </div>
     
     <!-- Video Section -->
@@ -53,40 +51,34 @@
     </video>
 
     <script>
-        // Replace 'my-qr-video-site' with your unique site name
-        const siteName = 'qr-code-for-internet-safety';
+        const siteName = 'qr-safety-pageviews';
         
-        // Load current count on page load
-        fetch(`https://api.countapi.xyz/get/${siteName}/visits`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('counter').textContent = data.value || 0;
-            })
-            .catch(error => {
-                console.error('Error loading counter:', error);
-                document.getElementById('counter').textContent = 'Error';
-            });
-
-        function incrementVisit() {
-            const button = document.getElementById('counterBtn');
-            button.disabled = true;
-            button.textContent = 'Counting...';
-            
-            fetch(`https://api.countapi.xyz/hit/${siteName}/visits`)
-                .then(response => response.json())
+        // Automatically count page view when page loads
+        function countPageView() {
+            fetch(`https://api.countapi.xyz/hit/${siteName}/views`)
+                .then(response => {
+                    if (!response.ok) throw new Error('API unavailable');
+                    return response.json();
+                })
                 .then(data => {
-                    document.getElementById('counter').textContent = data.value;
-                    button.textContent = 'Thanks for visiting!';
-                    setTimeout(() => {
-                        button.textContent = 'Already counted!';
-                    }, 2000);
+                    // Update both counter displays
+                    document.querySelectorAll('#counter').forEach(el => {
+                        el.textContent = data.value;
+                    });
+                    console.log('Page view counted:', data.value);
                 })
                 .catch(error => {
-                    console.error('Error incrementing counter:', error);
-                    button.disabled = false;
-                    button.textContent = 'Click to Count Your Visit';
+                    console.error('Error counting page view:', error);
+                    // Fallback: show a message that counting is temporarily unavailable
+                    document.querySelectorAll('#counter').forEach(el => {
+                        el.textContent = 'N/A';
+                        el.title = 'Counter temporarily unavailable';
+                    });
                 });
         }
+        
+        // Count page view automatically when page loads
+        countPageView();
     </script>
 </body>
 </html>
